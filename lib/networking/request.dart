@@ -5,10 +5,11 @@ import 'package:typesafehttp/networking/serializable.dart';
 class Request<T> {
   final String url;
   final Serializable<T> _serializable;
+  final Map<String, String> headers;
 
   T _body;
 
-  Request(this. url, this._serializable);
+  Request(this._serializable, {this. url, this.headers});
 
   void setBody(T body) {
     _body = body;

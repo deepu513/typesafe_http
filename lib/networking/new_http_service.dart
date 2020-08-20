@@ -20,7 +20,7 @@ class NewHttpService {
       Serializable<ResponseType> responseSerializable) {
     return http
         .post(request.url,
-            body: request.toJsonString(), headers: _getDefaultHeaders())
+            body: request.toJsonString(), headers: request.headers)
         .then(
             (http.Response value) =>
                 Response<ResponseType>(value.body, responseSerializable)
@@ -28,18 +28,20 @@ class NewHttpService {
             onError: () {});
   }
 
-  Future<ResponseType> get<ResponseType>(
-      String url, Serializable<ResponseType> responseSerializable) {
-    return http.get(url, headers: _getDefaultHeaders()).then(
+  Future<ResponseType> get<RequestType, ResponseType>(
+      Request<RequestType> request,
+      Serializable<ResponseType> responseSerializable) {
+    return http.get(request.url, headers: request.headers).then(
         (http.Response value) =>
             Response<ResponseType>(value.body, responseSerializable)
                 .getResponseBody(),
         onError: () {});
   }
 
-  Future<List<ResponseType>> getAll<ResponseType>(
-      String url, Serializable<ResponseType> responseSerializable) {
-    return http.get(url, headers: _getDefaultHeaders()).then(
+  Future<List<ResponseType>> getAll<RequestType, ResponseType>(
+      Request<RequestType> request,
+      Serializable<ResponseType> responseSerializable) {
+    return http.get(request.url, headers: request.headers).then(
         (http.Response value) =>
             Response<ResponseType>(value.body, responseSerializable)
                 .getResponseBodyAsList(),
@@ -51,7 +53,7 @@ class NewHttpService {
       Serializable<ResponseType> responseSerializable) {
     return http
         .put(request.url,
-            body: request.toJsonString(), headers: _getDefaultHeaders())
+            body: request.toJsonString(), headers: request.headers)
         .then(
             (http.Response value) =>
                 Response<ResponseType>(value.body, responseSerializable)
@@ -59,17 +61,16 @@ class NewHttpService {
             onError: () {});
   }
 
-  Future<bool> delete(String url) {
-    return http.delete(url).then((value) {
-      return value.statusCode == 200;
-    }, onError: () {});
+  Future<bool> delete<RequestType>(Request<RequestType> request) {
+    return http
+        .delete(request.url, headers: request.headers)
+        .then((value) => value.statusCode == 200, onError: () {});
   }
 
-  // Usage:
+// Usage:
 //  var newHttpService = NewHttpService();
 //  Request<Post> request = Request("/posts/", _postSerializable);
 //  newHttpService.post<Post, OtherPost>(request, _otherPostSerializable);
-
 
 //
 //  List<T> _processResponseArray(http.Response response) {
@@ -118,7 +119,14 @@ class NewHttpService {
 //      throw e;
 //  }
 //
-  Map<String, String> _getDefaultHeaders() {
-    return {"content-type": "application/json"};
-  }
+
+//  Map<String, String> _getDefaultHeaders({String token}) {
+//    var map = {"content-type": "application/json"};
+//
+//    if (token != null && token.isNotEmpty) {
+//      map.putIfAbsent("Authorization", () => "Bearer $token");
+//    }
+//
+//    return map;
+//  }
 }
