@@ -5,6 +5,7 @@ import 'package:typesafehttp/models/post_serializable.dart';
 import 'package:typesafehttp/networking/http_service.dart';
 import 'package:typesafehttp/networking/new_http_service.dart';
 import 'package:typesafehttp/networking/request.dart';
+import 'package:typesafehttp/networking/response.dart';
 
 
 class PostRepository {
