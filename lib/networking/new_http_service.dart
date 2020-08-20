@@ -28,7 +28,7 @@ class NewHttpService {
 
   // Usage:
 //  var newHttpService = NewHttpService();
-//  Request<Post, PostSerializable> request = Request("/posts/", _postSerializable);
+//  Request<Post> request = Request("/posts/", _postSerializable);
 //  newHttpService.post<Post, OtherPost>(request, _otherPostSerializable);
 
 //  final S _serializable;

@@ -9,7 +9,6 @@ import 'package:typesafehttp/networking/request.dart';
 
 class PostRepository {
   PostSerializable _postSerializable;
-  OtherPostSerializable _otherPostSerializable;
 
   HttpService<Post, PostSerializable> _postHttpService;
 
@@ -19,9 +18,6 @@ class PostRepository {
   }
 
   Future<Post> get(String id) async {
-    var newHttpService = NewHttpService();
-    Request<Post> request = Request("/posts/", _postSerializable);
-    newHttpService.post<Post, OtherPost>(request, _otherPostSerializable);
     return _postHttpService.get("/posts/$id");
   }
 
