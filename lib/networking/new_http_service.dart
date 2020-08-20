@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:http/http.dart' as http;
+import 'package:typesafehttp/networking/interceptor.dart';
 import 'package:typesafehttp/networking/request.dart';
 import 'package:typesafehttp/networking/response.dart';
 import 'package:typesafehttp/networking/serializable.dart';
@@ -8,11 +9,23 @@ import 'package:typesafehttp/networking/serializable.dart';
 class NewHttpService {
   static NewHttpService _instance;
 
-  NewHttpService._internal();
+  List<Interceptor> _interceptors;
+
+  NewHttpService._internal() {
+    _interceptors = List<Interceptor>();
+  }
 
   factory NewHttpService() {
     _instance ??= NewHttpService._internal();
     return _instance;
+  }
+
+  void addInterceptor(Interceptor interceptor) {
+    _interceptors.add(interceptor);
+  }
+
+  execute(Request request) {
+
   }
 
   Future<ResponseType> post<RequestType, ResponseType>(

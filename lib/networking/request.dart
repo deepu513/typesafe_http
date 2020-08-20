@@ -9,7 +9,7 @@ class Request<T> {
 
   T _body;
 
-  Request(this._serializable, {this. url, this.headers});
+  Request(this._serializable, this.url, {this.headers});
 
   void setBody(T body) {
     _body = body;
@@ -18,4 +18,10 @@ class Request<T> {
   Map<String, dynamic> toJsonMap() => _serializable.toJson(_body);
 
   String toJsonString() => jsonEncode(toJsonMap());
+
+  Request<T> copyWith(
+      {Serializable<T> serializable, String url, Map<String, String> headers}) {
+    return Request<T>(serializable ?? this._serializable, url ?? this.url,
+        headers: headers ?? this.headers);
+  }
 }
