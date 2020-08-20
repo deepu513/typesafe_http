@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:typesafehttp/networking/serializable.dart';
 
-class Request<T, S extends Serializable<T>> {
+class Request<T> {
   final String url;
-  final S _serializable;
+  final Serializable<T> _serializable;
 
   T _body;
 

@@ -15,9 +15,9 @@ class NewHttpService {
     return _instance;
   }
 
-  Future<Response<N, Serializable<N>>> post<R, N>(
-      Request<R, Serializable<R>> request,
-      Serializable<N> responseSerializable) {
+  Future<Response<ResponseType>> post<RequestType, ResponseType>(
+      Request<RequestType> request,
+      Serializable<ResponseType> responseSerializable) {
     return http
         .post(request.url,
             body: request.toJsonString(), headers: _getDefaultHeaders())
@@ -27,8 +27,9 @@ class NewHttpService {
   }
 
   // Usage:
-  //Request<Post, PostSerializable> request = Request("/posts/", _postSerializable);
-//    newHttpService.post<Post, Post>(request, _postSerializable);
+//  var newHttpService = NewHttpService();
+//  Request<Post, PostSerializable> request = Request("/posts/", _postSerializable);
+//  newHttpService.post<Post, OtherPost>(request, _otherPostSerializable);
 
 //  final S _serializable;
 //

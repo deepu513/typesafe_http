@@ -1,11 +1,16 @@
+import 'package:typesafehttp/models/other/other_post.dart';
+import 'package:typesafehttp/models/other/other_post_serializable.dart';
 import 'package:typesafehttp/models/post.dart';
 import 'package:typesafehttp/models/post_serializable.dart';
 import 'package:typesafehttp/networking/http_service.dart';
+import 'package:typesafehttp/networking/new_http_service.dart';
+import 'package:typesafehttp/networking/request.dart';
 
 
 class PostRepository {
-  var _postSerializable;
-  
+  PostSerializable _postSerializable;
+  OtherPostSerializable _otherPostSerializable;
+
   HttpService<Post, PostSerializable> _postHttpService;
 
   PostRepository() {
@@ -14,6 +19,9 @@ class PostRepository {
   }
 
   Future<Post> get(String id) async {
+    var newHttpService = NewHttpService();
+    Request<Post> request = Request("/posts/", _postSerializable);
+    newHttpService.post<Post, OtherPost>(request, _otherPostSerializable);
     return _postHttpService.get("/posts/$id");
   }
 

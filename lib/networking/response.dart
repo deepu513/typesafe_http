@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:typesafehttp/networking/serializable.dart';
 
-class Response<T, S extends Serializable<T>> {
-  final S _serializable;
+class Response<T> {
+  final Serializable<T> _serializable;
 
   T _body;
 
@@ -11,6 +11,8 @@ class Response<T, S extends Serializable<T>> {
 
   Response(String responseString, this._serializable) {
     // If json is huge, decoding this can jank UI
+    // prefer using compute to do this on another isolate
+    // https://flutter.dev/docs/cookbook/networking/background-parsing#4-move-this-work-to-a-separate-isolate
     responseMap = jsonDecode(responseString);
   }
 
