@@ -1,12 +1,16 @@
 import 'package:typesafehttp/networking/request.dart';
 import 'package:typesafehttp/networking/response.dart';
+import 'package:typesafehttp/networking/serializable.dart';
 
 abstract class Interceptor {
-  Response intercept(Chain chain);
+  Future<Response<ResponseType>> intercept<RequestType, ResponseType>(Chain chain);
 }
 
 abstract class Chain {
-  Request request();
+  Request<RequestType> request<RequestType>();
 
-  Response proceed(Request request);
+  Future<Response<ResponseType>> proceed<RequestType, ResponseType>(
+      Request<RequestType> request, Serializable<ResponseType> serializable);
+
+  Serializable<ResponseType> responseSerializable<ResponseType>();
 }

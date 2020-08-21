@@ -73,7 +73,7 @@ class HttpService<T, S extends Serializable<T>> {
 
   List<T> _processResponseArray(http.Response response) {
     var responseList;
-    if (_isSuccessOrThrow(response)) {
+    if (_isSuccessOrThrow(response.statusCode)) {
       responseList =
           _serializable.fromJsonArray(jsonDecode(response.body.toString()));
     }
@@ -82,37 +82,36 @@ class HttpService<T, S extends Serializable<T>> {
 
   T _processResponse(http.Response response) {
     var responseObject;
-    if (_isSuccessOrThrow(response)) {
+    if (_isSuccessOrThrow(response.statusCode)) {
       responseObject =
           _serializable.fromJson(jsonDecode(response.body.toString()));
     }
     return responseObject;
   }
 
-  bool _isSuccessOrThrow(http.Response response) {
-    switch (response.statusCode) {
+  bool _isSuccessOrThrow(int statusCode) {
+    switch (statusCode) {
       case 200:
       case 201:
         return true;
       case 400:
-        throw BadRequestException(response.body.toString());
+        throw BadRequestException();
       case 401:
       case 403:
-        throw UnauthorisedException(response.body.toString());
+        throw UnauthorisedException();
       case 404:
-        throw ResourceNotFoundException(response.body.toString());
+        throw ResourceNotFoundException();
+      case 409:
+        throw ResourceConflictException();
       case 500:
       default:
-        throw FetchDataException(
-            'Error occurred while communicating with server : ${response.statusCode}');
+        throw FetchDataException();
     }
   }
 
   _throwSpecificException(Exception e) {
-    if (e is FormatException) {
-      throw BadUrlException(e.message);
-    } else if (e is SocketException) {
-      throw FetchDataException('No Internet connection');
+    if (e is SocketException) {
+      throw FetchDataException();
     } else
       throw e;
   }

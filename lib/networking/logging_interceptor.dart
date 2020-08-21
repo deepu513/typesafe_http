@@ -4,14 +4,17 @@ import 'package:typesafehttp/networking/response.dart';
 
 class LoggingInterceptor implements Interceptor {
   @override
-  Response intercept(Chain chain) {
+  Future<Response<ResponseType>> intercept<RequestType, ResponseType>(
+      Chain chain) async {
     Request request = chain.request();
 
-    //TODO: Check if the build is debug build, then print
+    //TODO: Check if the build is debug build, then only add this interceptor
     print("Logging for ${request.url}");
     print("Headers ${request.headers.toString()}");
-    print("Request body ${request.toJsonString()}");
+    // TODO: Check for nulls here
+    //print("Request body ${request.toJsonString()}");
 
-    return chain.proceed(request);
+    return chain.proceed<RequestType, ResponseType>(
+        request, chain.responseSerializable());
   }
 }

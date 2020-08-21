@@ -9,26 +9,25 @@ class HttpException implements Exception {
 }
 
 class FetchDataException extends HttpException {
-  FetchDataException(String message)
-      : super("Error During Communication: $message");
+  FetchDataException() : super("No internet connection");
 }
 
 class BadRequestException extends HttpException {
-  BadRequestException(String message) : super("Invalid Request: $message");
-}
-
-class BadUrlException extends HttpException {
-  BadUrlException(String message) : super("Bad URL: $message");
+  BadRequestException() : super("Invalid request");
 }
 
 class UnauthorisedException extends HttpException {
-  UnauthorisedException(String message) : super("Unauthorised: $message");
+  UnauthorisedException() : super("Unauthorised");
 }
 
 class ResourceNotFoundException extends HttpException {
-  ResourceNotFoundException(String message) : super("Not found: $message");
+  ResourceNotFoundException() : super("Not found");
 }
 
-class InvalidInputException extends HttpException {
-  InvalidInputException(String message) : super("Invalid Input: $message");
+class ResourceConflictException extends HttpException {
+  ResourceConflictException() : super("Conflict in resource");
+}
+
+class UnknownResponseCodeException extends HttpException {
+  UnknownResponseCodeException() : super("Unknown response code");
 }

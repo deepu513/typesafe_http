@@ -1,15 +1,17 @@
 import 'dart:convert';
 
+import 'package:typesafehttp/networking/method.dart';
 import 'package:typesafehttp/networking/serializable.dart';
 
 class Request<T> {
   final String url;
   final Serializable<T> _serializable;
   final Map<String, String> headers;
+  final Method method;
 
   T _body;
 
-  Request(this._serializable, this.url, {this.headers});
+  Request(this.method, this.url, this._serializable, {this.headers});
 
   void setBody(T body) {
     _body = body;
@@ -20,8 +22,12 @@ class Request<T> {
   String toJsonString() => jsonEncode(toJsonMap());
 
   Request<T> copyWith(
-      {Serializable<T> serializable, String url, Map<String, String> headers}) {
-    return Request<T>(serializable ?? this._serializable, url ?? this.url,
+      {Method method,
+      String url,
+      Serializable<T> serializable,
+      Map<String, String> headers}) {
+    return Request<T>(method ?? this.method, url ?? this.url,
+        serializable ?? this._serializable,
         headers: headers ?? this.headers);
   }
 }
