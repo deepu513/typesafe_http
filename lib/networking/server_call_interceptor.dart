@@ -111,7 +111,6 @@ class ServerCallInterceptor implements Interceptor {
       case 400:
         throw BadRequestException();
       case 401:
-      case 403:
         throw UnauthorisedException();
       case 404:
         throw ResourceNotFoundException();
