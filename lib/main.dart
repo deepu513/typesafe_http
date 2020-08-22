@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart';
 import 'package:typesafehttp/bloc/post/post_bloc.dart';
 import 'package:typesafehttp/bloc/post/post_event.dart';
 import 'package:typesafehttp/bloc/post/post_state.dart';
@@ -9,7 +8,11 @@ import 'package:typesafehttp/networking/new_http_service.dart';
 import 'package:typesafehttp/networking/request_header_interceptor.dart';
 
 void main() {
-  NewHttpService([LoggingInterceptor(), RequestHeaderInterceptor()]);
+  NewHttpService([LoggingInterceptor(), RequestHeaderInterceptor()], () {
+    // on session expired, should add event in bloc,
+    // which will output a state and logout user.
+  });
+
   runApp(BlocProvider(
       create: (context) {
         return PostBloc();
