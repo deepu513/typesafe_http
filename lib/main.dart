@@ -4,8 +4,12 @@ import 'package:http/http.dart';
 import 'package:typesafehttp/bloc/post/post_bloc.dart';
 import 'package:typesafehttp/bloc/post/post_event.dart';
 import 'package:typesafehttp/bloc/post/post_state.dart';
+import 'package:typesafehttp/networking/logging_interceptor.dart';
+import 'package:typesafehttp/networking/new_http_service.dart';
+import 'package:typesafehttp/networking/request_header_interceptor.dart';
 
 void main() {
+  NewHttpService([LoggingInterceptor(), RequestHeaderInterceptor()]);
   runApp(BlocProvider(
       create: (context) {
         return PostBloc();

@@ -26,6 +26,8 @@ class NewHttpService {
     _realInterceptorChain = RealInterceptorChain(_interceptors);
   }
 
+  static NewHttpService get instance => _instance;
+
   factory NewHttpService(List<Interceptor> interceptors) {
     _instance ??= NewHttpService._internal(interceptors);
     return _instance;
