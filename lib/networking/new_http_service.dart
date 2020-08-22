@@ -37,7 +37,9 @@ class NewHttpService {
 
   Future<Response<ResponseType>> enqueue<RequestType, ResponseType>(
       Request<RequestType> request, Serializable<ResponseType> serializable) {
-    return _realInterceptorChain.proceed(request, serializable);
+    if (request != null)
+      return _realInterceptorChain.proceed(request, serializable);
+    else throw Exception("Request can not be null");
   }
 
 //  Future<ResponseType> post<RequestType, ResponseType>(
@@ -96,14 +98,4 @@ class NewHttpService {
 //  var newHttpService = NewHttpService();
 //  Request<Post> request = Request("/posts/", _postSerializable);
 //  newHttpService.post<Post, OtherPost>(request, _otherPostSerializable);
-
-//  Map<String, String> _getDefaultHeaders({String token}) {
-//    var map = {"content-type": "application/json"};
-//
-//    if (token != null && token.isNotEmpty) {
-//      map.putIfAbsent("Authorization", () => "Bearer $token");
-//    }
-//
-//    return map;
-//  }
 }

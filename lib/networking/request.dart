@@ -17,7 +17,10 @@ class Request<T> {
     _body = body;
   }
 
-  Map<String, dynamic> toJsonMap() => _serializable.toJson(_body);
+  Map<String, dynamic> toJsonMap() {
+    if (_body != null) return _serializable.toJson(_body);
+    else return {};
+  }
 
   String toJsonString() => jsonEncode(toJsonMap());
 

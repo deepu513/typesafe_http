@@ -11,8 +11,7 @@ class LoggingInterceptor implements Interceptor {
     //TODO: Check if the build is debug build, then only add this interceptor
     print("Logging for ${request.url}");
     print("Headers ${request.headers.toString()}");
-    // TODO: Check for nulls here
-    //print("Request body ${request.toJsonString()}");
+    print("Request body ${request.toJsonString()}");
 
     return chain.proceed<RequestType, ResponseType>(
         request, chain.responseSerializable());
