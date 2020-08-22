@@ -6,9 +6,14 @@ import 'package:typesafehttp/bloc/post/post_state.dart';
 import 'package:typesafehttp/networking/logging_interceptor.dart';
 import 'package:typesafehttp/networking/new_http_service.dart';
 import 'package:typesafehttp/networking/request_header_interceptor.dart';
+import 'package:typesafehttp/repository/settings_repository.dart';
 
-void main() {
-  NewHttpService([LoggingInterceptor(), RequestHeaderInterceptor()], () {
+void main() async {
+  NewHttpService([
+    //TODO: Check if the build is debug build, then only add this interceptor
+    LoggingInterceptor(),
+    RequestHeaderInterceptor(await SettingsRepository.getInstance())
+  ], () {
     // on session expired, should add event in bloc,
     // which will output a state and logout user.
   });
@@ -60,8 +65,8 @@ class MyHomePage extends StatelessWidget {
                 ),
                 RaisedButton(
                   child: Text('Send a post'),
-                  onPressed: () => BlocProvider.of<PostBloc>(context)
-                      .add(SendPost()),
+                  onPressed: () =>
+                      BlocProvider.of<PostBloc>(context).add(SendPost()),
                 ),
                 Text(postState.toString())
               ],

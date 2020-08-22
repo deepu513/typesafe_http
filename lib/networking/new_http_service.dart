@@ -19,10 +19,9 @@ class NewHttpService {
   static NewHttpService _instance;
 
   List<Interceptor> _interceptors;
+
   RealInterceptorChain _realInterceptorChain;
 
-  // TODO: Initialize this
-  SettingsRepository _settingsRepository;
   SessionExpiredCallback _onSessionExpired;
 
   int _refreshTokenCounter = 0;
@@ -60,24 +59,20 @@ class NewHttpService {
     } on UnauthorisedException {
       // Chain is broken here
       try {
-         /** If you again get 401 in refreshing token call,
-          *  this will go in endless loop
-          *  It is mostly backend error but should at least be handled on frontend.
-          *  Make a counter, initialize it to 0, increment it during refresh token,
-          *  if counter > 0, logout user. */
+        /** If you again get 401 in refreshing token call,
+         *  this will go in endless loop
+         *  It is mostly backend error but should at least be handled on frontend.
+         *  Make a counter, initialize it to 0, increment it during refresh token,
+         *  if counter > 0, logout user. */
         if (_refreshTokenCounter == 0) {
           _refreshTokenCounter++;
-
-          final String refreshToken =
-              _settingsRepository.get(SettingKey.KEY_REFRESH_TOKEN);
 
           // Get a refresh token request
           TokenSerializable tokenSerializable = TokenSerializable();
 
           // TODO: Replace with actual URL
-          Request<Token> refreshTokenRequest = Request(
-              Method.GET, "refreshTokenUrl", tokenSerializable,
-              headers: _getDefaultHeaders(token: refreshToken));
+          Request<Token> refreshTokenRequest =
+              Request(Method.GET, "refreshTokenUrl", tokenSerializable);
 
           // await for the request to complete
           Response<Token> tokenResponse = await enqueue<Token, Token>(
@@ -85,15 +80,17 @@ class NewHttpService {
 
           // update shared preferences with new token
           var updatedToken = tokenResponse.getResponseBody().token;
-          _settingsRepository.saveValue(
-              SettingKey.KEY_REQUEST_TOKEN, updatedToken);
 
-          // copy existing request and give new token to updated request
-          Request<RequestType> updatedRequest = request.copyWith(
-              headers: _getDefaultHeaders(token: updatedToken));
+          await SettingsRepository.getInstance()
+              .then((instance) => instance.saveValue(
+                  SettingKey.KEY_REQUEST_TOKEN, updatedToken))
+              .catchError(() {
+            _onSessionExpired?.call();
+            throw Exception("Session expired");
+          });
 
-          // call and enqueue again with updated request
-          return enqueue(updatedRequest, serializable);
+          // call and enqueue again with same request
+          return enqueue(request, serializable);
         } else {
           // Logout user
           _onSessionExpired?.call();
@@ -112,15 +109,4 @@ class NewHttpService {
       _refreshTokenCounter = 0;
     }
   }
-
-  Map<String, String> _getDefaultHeaders({String token}) {
-    var map = {"content-type": "application/json"};
-
-    if (token != null && token.isNotEmpty) {
-      map.putIfAbsent("Authorization", () => "Bearer $token");
-    }
-
-    return map;
-  }
-
 }

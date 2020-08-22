@@ -32,6 +32,24 @@ class ServerCallInterceptor implements Interceptor {
     return null;
   }
 
+  Future<Response<ResponseType>> get<RequestType, ResponseType>(
+      Request<RequestType> request,
+      Serializable<ResponseType> responseSerializable) {
+    return http.get(request.url, headers: request.headers).then(
+        (actualResponse) =>
+            _processResponse(actualResponse, responseSerializable),
+        onError: (e) => throw FetchDataException());
+  }
+
+  Future<Response<ResponseType>> getAll<RequestType, ResponseType>(
+      Request<RequestType> request,
+      Serializable<ResponseType> responseSerializable) {
+    return http.get(request.url, headers: request.headers).then(
+        (actualResponse) =>
+            _processResponse(actualResponse, responseSerializable),
+        onError: (e) => throw FetchDataException());
+  }
+
   Future<Response<ResponseType>> post<RequestType, ResponseType>(
       Request<RequestType> request,
       Serializable<ResponseType> responseSerializable) {
@@ -39,42 +57,9 @@ class ServerCallInterceptor implements Interceptor {
         .post(request.url,
             body: request.toJsonString(), headers: request.headers)
         .then(
-            (http.Response value) {
-              if(_isSuccessOrThrow(value.statusCode))
-              return Response<ResponseType>(value.body, responseSerializable);
-              else throw UnknownResponseCodeException();
-            },
-            onError: (e) {
-              throw FetchDataException();
-            });
-  }
-
-  Future<Response<ResponseType>> get<RequestType, ResponseType>(
-      Request<RequestType> request,
-      Serializable<ResponseType> responseSerializable) {
-    return http.get(request.url, headers: request.headers).then(
-        (http.Response value) {
-          if(_isSuccessOrThrow(value.statusCode))
-            return Response<ResponseType>(value.body, responseSerializable);
-          else throw UnknownResponseCodeException();
-        },
-        onError: (e) {
-          throw FetchDataException();
-        });
-  }
-
-  Future<Response<ResponseType>> getAll<RequestType, ResponseType>(
-      Request<RequestType> request,
-      Serializable<ResponseType> responseSerializable) {
-    return http.get(request.url, headers: request.headers).then(
-        (http.Response value) {
-          if(_isSuccessOrThrow(value.statusCode))
-            return Response<ResponseType>(value.body, responseSerializable);
-          else throw UnknownResponseCodeException();
-        },
-        onError: (e) {
-          throw FetchDataException();
-        });
+            (actualResponse) =>
+                _processResponse(actualResponse, responseSerializable),
+            onError: (e) => throw FetchDataException());
   }
 
   Future<Response<ResponseType>> put<RequestType, ResponseType>(
@@ -84,23 +69,26 @@ class ServerCallInterceptor implements Interceptor {
         .put(request.url,
             body: request.toJsonString(), headers: request.headers)
         .then(
-            (http.Response value) {
-              if(_isSuccessOrThrow(value.statusCode))
-                return Response<ResponseType>(value.body, responseSerializable);
-              else throw UnknownResponseCodeException();
-            },
-            onError: (e) {
-              throw FetchDataException();
-            });
+            (actualResponse) =>
+                _processResponse(actualResponse, responseSerializable),
+            onError: (e) => throw FetchDataException());
   }
 
   Future<Response<ResponseType>> delete<RequestType, ResponseType>(
       Request<RequestType> request) {
-    return http
-        .delete(request.url, headers: request.headers)
-        .then((value) => Response(value.body, null), onError: (e) {
-      throw FetchDataException();
-    });
+    return http.delete(request.url, headers: request.headers).then(
+        (actualResponse) => _processResponse(actualResponse, null),
+        onError: (e) => throw FetchDataException());
+  }
+
+  Response<ResponseType> _processResponse<ResponseType>(
+      http.Response actualResponse,
+      Serializable<ResponseType> responseSerializable) {
+    if (_isSuccessOrThrow(actualResponse.statusCode))
+      return Response<ResponseType>(actualResponse.body, responseSerializable,
+          statusCode: actualResponse.statusCode);
+    else
+      throw UnknownResponseCodeException();
   }
 
   bool _isSuccessOrThrow(int statusCode) {

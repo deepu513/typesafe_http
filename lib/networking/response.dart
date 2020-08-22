@@ -7,13 +7,16 @@ class Response<T> {
 
   T _body;
 
+  final int statusCode;
+
   Map<String, dynamic> responseMap;
 
-  Response(String responseString, this._serializable) {
+  Response(String responseString, this._serializable, {this.statusCode}) {
     // If json is huge, decoding this can jank UI
     // prefer using compute to do this on another isolate
     // https://flutter.dev/docs/cookbook/networking/background-parsing#4-move-this-work-to-a-separate-isolate
-    responseMap = jsonDecode(responseString);
+    if (responseString != null && responseString.isNotEmpty)
+      responseMap = jsonDecode(responseString);
   }
 
   T getResponseBody() {

@@ -8,7 +8,6 @@ class LoggingInterceptor implements Interceptor {
       Chain chain) async {
     Request request = chain.request();
 
-    //TODO: Check if the build is debug build, then only add this interceptor
     print("Logging for ${request.url}");
     print("Headers ${request.headers.toString()}");
     print("Request body ${request.toJsonString()}");
