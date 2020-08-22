@@ -3,12 +3,12 @@ import 'package:typesafehttp/networking/request.dart';
 import 'package:typesafehttp/networking/response.dart';
 import 'package:typesafehttp/networking/serializable.dart';
 
-// You iterate through all interceptors here
+// Iterate through all interceptors here
 class RealInterceptorChain implements Chain {
   List<Interceptor> _interceptors;
   Request _updatedRequest;
   Serializable _serializable;
-  int i = -1;
+  int _index = -1;
 
   RealInterceptorChain(List<Interceptor> interceptors) {
     this._interceptors = List.unmodifiable(interceptors);
@@ -23,10 +23,11 @@ class RealInterceptorChain implements Chain {
 
     Response<ResponseType> response;
 
-    // TODO: i should be reset for every new call or completion of a call, figure out a way
-    if (i < _interceptors.length)
-      response = await _interceptors[++i].intercept(this);
+    if (_index < _interceptors.length)
+      response = await _interceptors[++_index].intercept(this);
 
+    // reset index
+    _index = -1;
     return response;
   }
 
