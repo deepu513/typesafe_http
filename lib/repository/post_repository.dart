@@ -28,7 +28,12 @@ class PostRepository {
   }
 
   Future<List<Post>> getAll() async {
-    return _postHttpService.getAll("/posts");
+    Request<Post> request =
+    Request(Method.GET_LIST, "$_baseUrl/posts", _postSerializable);
+    Response<Post> post = await NewHttpService.instance
+        .enqueue<Post, Post>(request, _postSerializable);
+
+    return post.getResponseBodyAsList();
   }
 
   Future<Post> send(Post post) async {

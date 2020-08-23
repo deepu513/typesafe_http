@@ -9,6 +9,8 @@ import 'package:typesafehttp/networking/request_header_interceptor.dart';
 import 'package:typesafehttp/repository/settings_repository.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   NewHttpService([
     //TODO: Check if the build is debug build, then only add this interceptor
     LoggingInterceptor(),

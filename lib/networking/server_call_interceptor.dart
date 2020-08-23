@@ -35,19 +35,21 @@ class ServerCallInterceptor implements Interceptor {
   Future<Response<ResponseType>> get<RequestType, ResponseType>(
       Request<RequestType> request,
       Serializable<ResponseType> responseSerializable) {
-    return http.get(request.url, headers: request.headers).then(
-        (actualResponse) =>
-            _processResponse(actualResponse, responseSerializable),
-        onError: (e) => throw FetchDataException());
+    return http
+        .get(request.url, headers: request.headers)
+        .then((actualResponse) => _processResponse(
+            request.method, actualResponse, responseSerializable))
+        .catchError((e, stackTrace) => _handleError(e, stackTrace));
   }
 
   Future<Response<ResponseType>> getAll<RequestType, ResponseType>(
       Request<RequestType> request,
       Serializable<ResponseType> responseSerializable) {
-    return http.get(request.url, headers: request.headers).then(
-        (actualResponse) =>
-            _processResponse(actualResponse, responseSerializable),
-        onError: (e) => throw FetchDataException());
+    return http
+        .get(request.url, headers: request.headers)
+        .then((actualResponse) => _processResponse(
+            request.method, actualResponse, responseSerializable))
+        .catchError((e, stackTrace) => _handleError(e, stackTrace));
   }
 
   Future<Response<ResponseType>> post<RequestType, ResponseType>(
@@ -56,10 +58,9 @@ class ServerCallInterceptor implements Interceptor {
     return http
         .post(request.url,
             body: request.toJsonString(), headers: request.headers)
-        .then(
-            (actualResponse) =>
-                _processResponse(actualResponse, responseSerializable),
-            onError: (e) => throw FetchDataException());
+        .then((actualResponse) => _processResponse(
+            request.method, actualResponse, responseSerializable))
+        .catchError((e, stackTrace) => _handleError(e, stackTrace));
   }
 
   Future<Response<ResponseType>> put<RequestType, ResponseType>(
@@ -68,27 +69,39 @@ class ServerCallInterceptor implements Interceptor {
     return http
         .put(request.url,
             body: request.toJsonString(), headers: request.headers)
-        .then(
-            (actualResponse) =>
-                _processResponse(actualResponse, responseSerializable),
-            onError: (e) => throw FetchDataException());
+        .then((actualResponse) => _processResponse(
+            request.method, actualResponse, responseSerializable))
+        .catchError((e, stackTrace) => _handleError(e, stackTrace));
   }
 
   Future<Response<ResponseType>> delete<RequestType, ResponseType>(
       Request<RequestType> request) {
-    return http.delete(request.url, headers: request.headers).then(
-        (actualResponse) => _processResponse(actualResponse, null),
-        onError: (e) => throw FetchDataException());
+    return http
+        .delete(request.url, headers: request.headers)
+        .then((actualResponse) =>
+            _processResponse(request.method, actualResponse, null))
+        .catchError((e, stackTrace) => _handleError(e, stackTrace));
   }
 
   Response<ResponseType> _processResponse<ResponseType>(
+      Method requestMethod,
       http.Response actualResponse,
       Serializable<ResponseType> responseSerializable) {
     if (_isSuccessOrThrow(actualResponse.statusCode))
-      return Response<ResponseType>(actualResponse.body, responseSerializable,
-          statusCode: actualResponse.statusCode);
+      return requestMethod == Method.GET_LIST
+          ? Response<ResponseType>.fromJsonArray(
+              actualResponse.body, responseSerializable,
+              statusCode: actualResponse.statusCode)
+          : Response<ResponseType>(actualResponse.body, responseSerializable,
+              statusCode: actualResponse.statusCode);
     else
       throw UnknownResponseCodeException();
+  }
+
+  void _handleError(e, stackTrace) {
+    print(e);
+    print(stackTrace.toString());
+    throw FetchDataException();
   }
 
   bool _isSuccessOrThrow(int statusCode) {
