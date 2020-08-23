@@ -29,7 +29,7 @@ class PostRepository {
 
   Future<List<Post>> getAll() async {
     Request<Post> request =
-    Request(Method.GET_LIST, "$_baseUrl/posts", _postSerializable);
+        Request(Method.GET_LIST, "$_baseUrl/posts", _postSerializable);
     Response<Post> post = await NewHttpService.instance
         .enqueue<Post, Post>(request, _postSerializable);
 
@@ -37,6 +37,13 @@ class PostRepository {
   }
 
   Future<Post> send(Post post) async {
-    return _postHttpService.post("/posts", post);
+    Request<Post> request =
+        Request(Method.POST, "$_baseUrl/posts", _postSerializable)
+          ..setBody(post);
+
+    Response<Post> postResponse = await NewHttpService.instance
+        .enqueue<Post, Post>(request, _postSerializable);
+
+    return postResponse.getResponseBody();
   }
 }
