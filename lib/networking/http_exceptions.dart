@@ -32,3 +32,11 @@ class ResourceNotFoundException extends HttpException {
 class InvalidInputException extends HttpException {
   InvalidInputException(String message) : super("Invalid Input: $message");
 }
+
+class ResourceConflictException extends HttpException {
+  ResourceConflictException() : super("Conflict in resource");
+}
+
+class UnknownResponseCodeException extends HttpException {
+  UnknownResponseCodeException() : super("Unknown response code");
+}

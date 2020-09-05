@@ -9,13 +9,18 @@ class Request<T> {
 
   T _body;
 
-  Request(this._serializable, {this. url, this.headers});
+  Request(this._serializable, this. url, {this.headers});
 
   void setBody(T body) {
     _body = body;
   }
 
-  Map<String, dynamic> toJsonMap() => _serializable.toJson(_body);
+  Map<String, dynamic> toJsonMap() {
+    if (_body != null)
+      return _serializable.toJson(_body);
+    else
+      return {};
+  }
 
   String toJsonString() => jsonEncode(toJsonMap());
 }
